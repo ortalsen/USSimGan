@@ -333,7 +333,10 @@ def load_img(path, grayscale=False, target_size=None):
                 img = img.resize(hw_tuple)
     else:
         mat_dict = loadmat(path)
-        img = mat_dict[mat_dict.keys()[2]]
+        if mat_dict.has_key('p'):
+            img = mat_dict['p']
+        else:
+            img = mat_dict['env']
         if target_size:
             hw_tuple = (target_size[1], target_size[0])
             if img.shape != hw_tuple:
@@ -395,6 +398,8 @@ class ImageDataGenerator(object):
                  samplewise_center=False,
                  featurewise_std_normalization=False,
                  samplewise_std_normalization=False,
+                 selfwise_center=False,
+                 selfwise_std_normalization=False,
                  zca_whitening=False,
                  zca_epsilon=1e-6,
                  rotation_range=0.,
@@ -416,6 +421,8 @@ class ImageDataGenerator(object):
         self.samplewise_center = samplewise_center
         self.featurewise_std_normalization = featurewise_std_normalization
         self.samplewise_std_normalization = samplewise_std_normalization
+        self.selfwise_center = selfwise_center
+        self.selfwise_std_normalization = selfwise_std_normalization
         self.zca_whitening = zca_whitening
         self.zca_epsilon = zca_epsilon
         self.rotation_range = rotation_range
@@ -525,6 +532,10 @@ class ImageDataGenerator(object):
                               '`featurewise_std_normalization`, but it hasn\'t'
                               'been fit on any training data. Fit it '
                               'first by calling `.fit(numpy_data)`.')
+        if self.selfwise_center:
+            x-=np.mean(x,keepdims=False)
+        if self.selfwise_std_normalization:
+            x/=(np.std(x,keepdims=False) + 1e-7)
         if self.zca_whitening:
             if self.principal_components is not None:
                 flatx = np.reshape(x, (x.size))
@@ -1045,7 +1056,7 @@ class DirectoryIterator(Iterator):
                            grayscale=grayscale,
                            target_size=self.target_size)
             x = img_to_array(img, data_format=self.data_format)
-            x = self.image_data_generator.random_transform(x)
+            #x = self.image_data_generator.random_transform(x)
             x = self.image_data_generator.standardize(x)
             batch_x[i] = x
         # optionally save augmented images to disk for debugging purposes

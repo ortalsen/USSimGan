@@ -60,7 +60,7 @@ def plot_batch(image_batch, figure_path, label_batch=None, vmin=0, vmax=255, sca
                     x = np.log(D * x + 1) / np.log(D + 1)
                     x *= 255
 
-                ax[i][j].imshow(x.astype('uint8'), vmin=vmin, vmax=vmax, interpolation='lanczos')
+                ax[i][j].imshow(x.astype('uint8'), vmin=vmin, vmax=vmax, interpolation='lanczos', cmap='gray')
                 if label_batch is not None:
                     ax[i][j].set_title(label_batch[i * nb_columns + j])
                 ax[i][j].set_axis_off()

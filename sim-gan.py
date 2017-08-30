@@ -173,7 +173,7 @@ def adversarial_training(low_level_images_dir, goal_images_dir, refiner_model_pa
     # data generators
     #
 
-    datagen = myGenerator.ImageDataGenerator(samplewise_center=True, samplewise_std_normalization=True)
+    datagen = myGenerator.ImageDataGenerator(selfwise_center=True, selfwise_std_normalization=True)
 
     flow_from_directory_params = {'target_size': (img_height, img_width),
                                   'color_mode': 'grayscale' if img_channels == 1 else 'rgb',
